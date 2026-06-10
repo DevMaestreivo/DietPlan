@@ -731,7 +731,7 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
 
 <script>
 /* ── Constants ── */
-const DAYS = [{key:'day1',label:'Day 1',ar:'اليوم الأول'}];
+const DAYS = [{key:'day1',label:'DietPlan',en:'DietPlan'}];
 const MEALS = [
   {key:'breakfast', label:'Breakfast', ar:'الفطار',  icon:'☕', color:'#C9A227'},
   {key:'snack1',    label:'Snack 1',   ar:'سناك ١',  icon:'🍎', color:'#1a5c45'},
@@ -1020,7 +1020,7 @@ function buildSheetHTML() {
 
   /* ── Watermark ── */
   const wmLogo = uploadedLogoDataURL
-    ? `<img src="${uploadedLogoDataURL}" crossorigin="anonymous" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${logoSz}px;height:${logoSz}px;object-fit:contain;opacity:${logoOp};" />`
+    ? `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${logoSz}px;height:${logoSz}px;background-image:url('${uploadedLogoDataURL}');background-size:contain;background-position:center center;background-repeat:no-repeat;opacity:${logoOp};"></div>`
     : '';
   const wmSVG = `<svg width="794" height="1123" viewBox="0 0 794 1123" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;pointer-events:none;">
     <text transform="rotate(-40,397,561)" x="397" y="561" text-anchor="middle" font-family="Inter,sans-serif" font-size="52" font-weight="700" fill="rgba(201,162,39,0.035)" letter-spacing="12">${wmText}</text>
@@ -1069,9 +1069,7 @@ function buildSheetHTML() {
     <!-- LEFT: Logo + DR info -->
     <div style="display:flex;align-items:center;gap:18px;">
       ${uploadedLogoDataURL
-        ? `<div style="width:76px;height:76px;background:rgba(201,162,39,0.05);border:2px solid rgba(201,162,39,0.35);border-radius:16px;padding:4px;box-shadow:0 0 30px rgba(201,162,39,0.15);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-             <img src="${uploadedLogoDataURL}" crossorigin="anonymous" style="width:100%;height:100%;object-fit:contain;border-radius:12px;display:block;"/>
-           </div>`
+        ? `<div style="width:76px;height:76px;background:rgba(201,162,39,0.05);border:2px solid rgba(201,162,39,0.35);border-radius:16px;padding:4px;box-shadow:0 0 30px rgba(201,162,39,0.15);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background-image:url('${uploadedLogoDataURL}');background-size:contain;background-position:center center;background-repeat:no-repeat;"></div>`
         : `<div style="width:76px;height:76px;background:rgba(201,162,39,0.06);border:2px solid rgba(201,162,39,0.25);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 20px rgba(201,162,39,0.1);">
              <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
                <path d="M12 3C10 3 7 5 7 8.5c0 1.8.8 3.3 2 4.3L6 21h12l-3-8.2c1.2-1 2-2.5 2-4.3C17 5 14 3 12 3z" fill="rgba(201,162,39,0.8)"/>
@@ -1161,48 +1159,6 @@ function buildSheetHTML() {
   </div>` : ''}
 </div>
 
-<!-- ══ NUTRITION TARGETS KPI CARDS ══ -->
-${targetKcal !== '—' ? `
-<div style="background:rgba(15,61,46,0.15);padding:18px 40px;border-bottom:1px solid rgba(201,162,39,0.08);">
-  <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-family:'Cairo',sans-serif;direction:rtl;text-align:right;">الأهداف الغذائية اليومية · Daily Targets</div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
-    <!-- Calories — hero card -->
-    <div style="background:linear-gradient(135deg,#0F3D2E,#1a5c45);border:1px solid rgba(201,162,39,0.25);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(15,61,46,0.4),0 0 0 1px rgba(201,162,39,0.1);">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#C9A227,transparent);"></div>
-      <div style="font-size:22pt;font-weight:800;color:#FFFFFF;letter-spacing:-1px;">${targetKcal}</div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.7);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">Calories</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.25);font-family:'Cairo',sans-serif;margin-top:2px;">السعرات الحرارية</div>
-    </div>
-    <!-- Protein -->
-    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.5),transparent);"></div>
-      <div style="font-size:20pt;font-weight:800;color:#C9A227;letter-spacing:-1px;">${prot}<span style="font-size:9pt;font-weight:600;">g</span></div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.6);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Protein</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">البروتين</div>
-    </div>
-    <!-- Carbs -->
-    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.3),transparent);"></div>
-      <div style="font-size:20pt;font-weight:800;color:#e4bc4a;letter-spacing:-1px;">${carb}<span style="font-size:9pt;font-weight:600;">g</span></div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.55);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Carbs</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الكربوهيدرات</div>
-    </div>
-    <!-- Fat -->
-    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.2),transparent);"></div>
-      <div style="font-size:20pt;font-weight:800;color:rgba(201,162,39,0.75);letter-spacing:-1px;">${fat}<span style="font-size:9pt;font-weight:600;">g</span></div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.45);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Fat</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الدهون</div>
-    </div>
-    <!-- Water -->
-    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(15,61,46,0.8),transparent);"></div>
-      <div style="font-size:20pt;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:-1px;">${water}<span style="font-size:9pt;font-weight:600;">L</span></div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.4);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Water</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الماء</div>
-    </div>
-  </div>
-</div>` : ''}
 
 <!-- ══ MEDICAL ALERTS ══ -->
 ${(gn('medicalConditions') || gn('foodAllergies')) ? `
