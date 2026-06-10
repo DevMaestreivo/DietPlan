@@ -483,10 +483,6 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
         </button>
       </div>
       <div class="form-group">
-        <label class="form-label">Clinic Name / اسم العيادة</label>
-        <input type="text" class="form-input" id="clinicName" dir="auto" placeholder="عيادة التغذية العلاجية">
-        <label class="form-label" style="margin-top:12px;">Address / العنوان</label>
-        <input type="text" class="form-input" id="clinicAddress" dir="auto" placeholder="القاهرة، مصر">
         <label class="form-label" style="margin-top:12px;">Website / الموقع</label>
         <input type="text" class="form-input" id="clinicWebsite" placeholder="www.clinic.com">
       </div>
@@ -532,7 +528,6 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
       <div class="form-group"><label class="form-label">Full Name / الاسم</label><input type="text" class="form-input" dir="auto" id="drName" placeholder="د/ أحمد محمد"></div>
       <div class="form-group"><label class="form-label">Specialty / التخصص</label><input type="text" class="form-input" dir="auto" id="drSpecialty" placeholder="تغذية علاجية"></div>
       <div class="form-group"><label class="form-label">Phone / الهاتف</label><input type="text" class="form-input" id="drPhone" placeholder="01012345678"></div>
-      <div class="form-group"><label class="form-label">License / الترخيص</label><input type="text" class="form-input" id="drLicense" placeholder="رقم الترخيص"></div>
     </div>
   </div>
 </div>
@@ -548,7 +543,7 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
   </div>
   <div class="card-body">
     <div class="form-grid-4">
-      <div class="form-group"><label class="form-label">Full Name / الاسم</label><input type="text" class="form-input" dir="auto" id="clientName" placeholder="محمد علي"></div>
+      <div class="form-group"><label class="form-label">Full Name / الاسم</label><input type="text" class="form-input" dir="auto" id="clientName" placeholder="name"></div>
       <div class="form-group"><label class="form-label">Age / العمر</label><input type="number" class="form-input" id="clientAge" placeholder="30" min="1" max="120"></div>
       <div class="form-group"><label class="form-label">Gender / الجنس</label>
         <select class="form-input" id="clientGender">
@@ -1031,13 +1026,9 @@ function buildSheetHTML() {
   </svg>`;
 
   /* ── Gather calculated values from DOM ── */
-  const prot       = document.getElementById('calcProtein')?.textContent || '—';
-  const carb       = document.getElementById('calcCarbs')?.textContent   || '—';
-  const fat        = document.getElementById('calcFat')?.textContent     || '—';
   const water      = document.getElementById('calcWater')?.textContent   || '—';
-  const targetKcal = document.getElementById('calcTarget')?.textContent  || '—';
   const bmiVal     = document.getElementById('calcBMI')?.textContent     || '—';
-  const bmiCatVal  = document.getElementById('bmiCat')?.textContent      || '';
+//   const bmiCatVal  = document.getElementById('bmiCat')?.textContent      || '';
   const followDate = gn('followUpDate');
   const clientName = gv('clientName');
   const drName     = gv('drName');
