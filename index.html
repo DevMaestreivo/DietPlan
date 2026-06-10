@@ -7,15 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-  @font-face {
-    font-family: 'Cairo';
-    src: url('Cairo-VariableFont_slnt%2Cwght.ttf') format('truetype');
-    font-weight: 300 900;
-    font-style: normal;
-    font-display: swap;
-  }
-</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 /* ══════════════════════════════════════
@@ -1056,7 +1047,7 @@ function buildSheetHTML() {
   const arLabel = (text) =>
     `<span style="font-family:'Cairo',sans-serif;direction:rtl;unicode-bidi:embed;">${text}</span>`;
 
-  return `<div id="sheet-page" style="width:794px;background:#071510;font-family:'Cairo','Inter',sans-serif;color:#FFFFFF;position:relative;overflow:hidden;">
+  return `<div id="sheet-page" style="width:794px;background:#071510;font-family:'Inter','Cairo',sans-serif;color:#FFFFFF;position:relative;overflow:hidden;">
 
 <!-- ══ AMBIENT GLOW ══ -->
 <div style="position:absolute;top:-100px;left:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(15,61,46,0.5) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
@@ -1288,23 +1279,13 @@ async function generatePDF(autoDownload = false) {
   try {
     if (uploadedLogoDataURL) {
       await new Promise((res, rej) => {
-        const img = new Image(); img.onload = res; img.onerror = res; img.src = uploadedLogoDataURL;
+        const img = new Image(); img.onload = res; img.onerror = rej; img.src = uploadedLogoDataURL;
       }).catch(() => {});
     }
-    await Promise.all([
-      document.fonts.load('400 1em Cairo'),
-      document.fonts.load('700 1em Cairo'),
-    ]).catch(() => {});
     const ra = document.getElementById('render-area');
-    // Inject Cairo font into the render area and ensure local font is applied.
+    // Inject Cairo font into the render iframe area
     ra.innerHTML = `<style>
-      @font-face {
-        font-family: 'Cairo';
-        src: url('Cairo-VariableFont_slnt%2Cwght.ttf') format('truetype');
-        font-weight: 300 900;
-        font-style: normal;
-        font-display: swap;
-      }
+      @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
       * { box-sizing: border-box; }
     </style>` + buildSheetHTML();
     ra.style.cssText = 'position:absolute;left:0;top:0;z-index:-1;overflow:hidden;width:794px;background:#071510;';
@@ -1315,16 +1296,26 @@ async function generatePDF(autoDownload = false) {
       if (img.complete) res(); else { img.onload = res; img.onerror = res; }
     })));
     await new Promise(r => setTimeout(r, 800));
+    // Quick check: ensure the Cairo font is available to the layout engine
+    try {
+      if (!document.fonts.check("12px 'Cairo'")) {
+        console.warn('Cairo font not detected via document.fonts.check(). Trying local @font-face fallback if available.');
+      }
+    } catch (e) { console.warn('Font check failed', e); }
+
+    // Render using foreignObjectRendering which preserves browser text shaping (Arabic ligatures)
+    // and inject a cloned-doc style that requests Google Fonts and provides a local TTF fallback.
     const canvas = await html2canvas(el, {
       scale: 2.5,
-      useCORS: true, allowTaint: true,
+      useCORS: true,
+      allowTaint: false,
+      foreignObjectRendering: true,
       backgroundColor: '#071510',
       width: 794, height: el.scrollHeight,
       logging: false, windowWidth: 794,
-      foreignObjectRendering: true,
       onclone: (clonedDoc) => {
         const style = clonedDoc.createElement('style');
-        style.textContent = `@font-face { font-family: 'Cairo'; src: url('Cairo-VariableFont_slnt%2Cwght.ttf') format('truetype'); font-weight: 300 900; font-style: normal; font-display: swap; }`;
+        style.textContent = `\n          @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');\n          /* Local fallback: place Cairo TTF under /fonts/Cairo-Regular.ttf on your server for offline reliability */\n          @font-face{font-family:'CairoLocal';src:url('./fonts/Cairo-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap;}\n          *{font-family:'CairoLocal','Cairo',sans-serif !important;}\n        `;
         clonedDoc.head.appendChild(style);
       }
     });
