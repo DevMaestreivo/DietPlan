@@ -483,7 +483,6 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
         </button>
       </div>
       <div class="form-group">
-        <label class="form-label" style="margin-top:12px;">Website / الموقع</label>
         <input type="text" class="form-input" id="clinicWebsite" placeholder="www.clinic.com">
       </div>
       <div class="form-group">
@@ -543,7 +542,7 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
   </div>
   <div class="card-body">
     <div class="form-grid-4">
-      <div class="form-group"><label class="form-label">Full Name / الاسم</label><input type="text" class="form-input" dir="auto" id="clientName" placeholder="name"></div>
+      <div class="form-group"><label class="form-label">Full Name / الاسم</label><input type="text" class="form-input" dir="auto" id="clientName" placeholder="محمد علي"></div>
       <div class="form-group"><label class="form-label">Age / العمر</label><input type="number" class="form-input" id="clientAge" placeholder="30" min="1" max="120"></div>
       <div class="form-group"><label class="form-label">Gender / الجنس</label>
         <select class="form-input" id="clientGender">
@@ -556,7 +555,6 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
       <div class="form-group"><label class="form-label">Weight kg / الوزن الحالي</label><input type="number" class="form-input" id="clientWeight" placeholder="85" step="0.1"></div>
       <div class="form-group"><label class="form-label">Target kg / الوزن المستهدف</label><input type="number" class="form-input" id="targetWeight" placeholder="75" step="0.1"></div>
       <div class="form-group"><label class="form-label">Visit Date / التاريخ</label><input type="date" class="form-input" id="visitDate"></div>
-      <div class="form-group"><label class="form-label">Occupation / المهنة</label><input type="text" class="form-input" dir="auto" id="clientOccupation" placeholder="موظف"></div>
     </div>
     <div class="form-grid-2" style="margin-top:16px;">
       <div class="form-group"><label class="form-label">Medical Conditions / الحالة الصحية</label><textarea class="form-input" dir="auto" id="medicalConditions" rows="2" placeholder="سكري، ضغط، تكيس مبايض..."></textarea></div>
@@ -726,7 +724,7 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
 
 <script>
 /* ── Constants ── */
-const DAYS = [{key:'day1',label:'DietPlan',en:'DietPlan'}];
+const DAYS = [{key:'day1',label:'Day 1',ar:'اليوم الأول'}];
 const MEALS = [
   {key:'breakfast', label:'Breakfast', ar:'الفطار',  icon:'☕', color:'#C9A227'},
   {key:'snack1',    label:'Snack 1',   ar:'سناك ١',  icon:'🍎', color:'#1a5c45'},
@@ -1026,9 +1024,13 @@ function buildSheetHTML() {
   </svg>`;
 
   /* ── Gather calculated values from DOM ── */
+  const prot       = document.getElementById('calcProtein')?.textContent || '—';
+  const carb       = document.getElementById('calcCarbs')?.textContent   || '—';
+  const fat        = document.getElementById('calcFat')?.textContent     || '—';
   const water      = document.getElementById('calcWater')?.textContent   || '—';
+  const targetKcal = document.getElementById('calcTarget')?.textContent  || '—';
   const bmiVal     = document.getElementById('calcBMI')?.textContent     || '—';
-//   const bmiCatVal  = document.getElementById('bmiCat')?.textContent      || '';
+  const bmiCatVal  = document.getElementById('bmiCat')?.textContent      || '';
   const followDate = gn('followUpDate');
   const clientName = gv('clientName');
   const drName     = gv('drName');
@@ -1150,6 +1152,48 @@ function buildSheetHTML() {
   </div>` : ''}
 </div>
 
+<!-- ══ NUTRITION TARGETS KPI CARDS ══ -->
+${targetKcal !== '—' ? `
+<div style="background:rgba(15,61,46,0.15);padding:18px 40px;border-bottom:1px solid rgba(201,162,39,0.08);">
+  <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-family:'Cairo',sans-serif;direction:rtl;text-align:right;">الأهداف الغذائية اليومية · Daily Targets</div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
+    <!-- Calories — hero card -->
+    <div style="background:linear-gradient(135deg,#0F3D2E,#1a5c45);border:1px solid rgba(201,162,39,0.25);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(15,61,46,0.4),0 0 0 1px rgba(201,162,39,0.1);">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#C9A227,transparent);"></div>
+      <div style="font-size:22pt;font-weight:800;color:#FFFFFF;letter-spacing:-1px;">${targetKcal}</div>
+      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.7);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">Calories</div>
+      <div style="font-size:7pt;color:rgba(255,255,255,0.25);font-family:'Cairo',sans-serif;margin-top:2px;">السعرات الحرارية</div>
+    </div>
+    <!-- Protein -->
+    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.5),transparent);"></div>
+      <div style="font-size:20pt;font-weight:800;color:#C9A227;letter-spacing:-1px;">${prot}<span style="font-size:9pt;font-weight:600;">g</span></div>
+      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.6);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Protein</div>
+      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">البروتين</div>
+    </div>
+    <!-- Carbs -->
+    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.3),transparent);"></div>
+      <div style="font-size:20pt;font-weight:800;color:#e4bc4a;letter-spacing:-1px;">${carb}<span style="font-size:9pt;font-weight:600;">g</span></div>
+      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.55);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Carbs</div>
+      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الكربوهيدرات</div>
+    </div>
+    <!-- Fat -->
+    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.2),transparent);"></div>
+      <div style="font-size:20pt;font-weight:800;color:rgba(201,162,39,0.75);letter-spacing:-1px;">${fat}<span style="font-size:9pt;font-weight:600;">g</span></div>
+      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.45);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Fat</div>
+      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الدهون</div>
+    </div>
+    <!-- Water -->
+    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(15,61,46,0.8),transparent);"></div>
+      <div style="font-size:20pt;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:-1px;">${water}<span style="font-size:9pt;font-weight:600;">L</span></div>
+      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.4);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Water</div>
+      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الماء</div>
+    </div>
+  </div>
+</div>` : ''}
 
 <!-- ══ MEDICAL ALERTS ══ -->
 ${(gn('medicalConditions') || gn('foodAllergies')) ? `
