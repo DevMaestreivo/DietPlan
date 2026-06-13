@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NutriSheet Pro — Premium Nutrition Platform</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -49,7 +49,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
-  font-family: 'Inter', 'Cairo', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', 'Cairo', sans-serif;
   background: #071510;
   color: var(--white);
   min-height: 100vh;
@@ -390,12 +390,46 @@ textarea.form-input { resize: vertical; min-height: 70px; line-height: 1.6; }
 
 /* ══ RESPONSIVE ══ */
 @media(max-width: 768px) {
-  .hero-inner { padding: 28px 24px; }
-  .hero-actions { flex-direction: column; gap: 8px; }
-  .form-grid-4, .form-grid-3 { grid-template-columns: 1fr 1fr; }
-  .calc-stats-grid { grid-template-columns: repeat(3, 1fr); }
-  .meal-row { grid-template-columns: 1fr 34px; }
-  .card-body { padding: 18px 18px; }
+  /* Mobile-first improvements: tighter spacing, larger touch targets, readable sizes */
+  html { font-size: 15px; }
+  .nav-inner { padding: 0 16px; height: 56px; }
+  .nav-logo-mark { width: 34px; height: 34px; border-radius: 9px; }
+  .brand-name { font-size: 15px; }
+  .brand-tag { display: none; }
+
+  .hero-inner { padding: 20px 18px; }
+  .hero-content { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .hero-text h2 { font-size: 20px; text-align: right; }
+  .hero-text p { font-size: 14px; max-width: 100%; }
+  .hero-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+  .hero-actions .btn { width: 100%; justify-content: center; }
+
+  .main-container { padding: 0 16px 60px; }
+  .sections-grid { gap: 14px; }
+
+  /* Make form grids single-column for easy scrolling and input focus */
+  .form-grid-4, .form-grid-3, .form-grid-2 { grid-template-columns: 1fr; }
+  .form-grid-4 > .form-group, .form-grid-3 > .form-group, .form-grid-2 > .form-group { width: 100%; }
+
+  .card { border-radius: 16px; }
+  .card-header { padding: 16px 16px 12px; }
+  .card-body { padding: 14px 14px; }
+
+  .calc-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .calc-stat-val { font-size: 18px; }
+
+  /* Stack meal row content vertically for narrow screens */
+  .meal-row { grid-template-columns: 1fr; align-items: start; padding: 12px; gap: 10px; }
+  .meal-row .btn-danger-ghost { justify-self: end; margin-top: 6px; }
+
+  .day-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .day-tab { padding: 8px 14px; }
+
+  .actions-bar { padding: 18px 8px 28px; gap: 12px; }
+  .btn-lg { width: 100%; }
+
+  /* Slightly increase line-height for readability on small screens */
+  body, .form-input, textarea { line-height: 1.65; }
 }
 </style>
 </head>
@@ -1153,47 +1187,6 @@ function buildSheetHTML() {
 </div>
 
 <!-- ══ NUTRITION TARGETS KPI CARDS ══ -->
-${targetKcal !== '—' ? `
-<div style="background:rgba(15,61,46,0.15);padding:18px 40px;border-bottom:1px solid rgba(201,162,39,0.08);">
-  <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;font-family:'Cairo',sans-serif;direction:rtl;text-align:right;">الأهداف الغذائية اليومية · Daily Targets</div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
-    <!-- Calories — hero card -->
-    <div style="background:linear-gradient(135deg,#0F3D2E,#1a5c45);border:1px solid rgba(201,162,39,0.25);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(15,61,46,0.4),0 0 0 1px rgba(201,162,39,0.1);">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#C9A227,transparent);"></div>
-      <div style="font-size:22pt;font-weight:800;color:#FFFFFF;letter-spacing:-1px;">${targetKcal}</div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.7);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;">Calories</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.25);font-family:'Cairo',sans-serif;margin-top:2px;">السعرات الحرارية</div>
-    </div>
-    <!-- Protein -->
-    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.5),transparent);"></div>
-      <div style="font-size:20pt;font-weight:800;color:#C9A227;letter-spacing:-1px;">${prot}<span style="font-size:9pt;font-weight:600;">g</span></div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.6);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Protein</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">البروتين</div>
-    </div>
-    <!-- Carbs -->
-    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.3),transparent);"></div>
-      <div style="font-size:20pt;font-weight:800;color:#e4bc4a;letter-spacing:-1px;">${carb}<span style="font-size:9pt;font-weight:600;">g</span></div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.55);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Carbs</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الكربوهيدرات</div>
-    </div>
-    <!-- Fat -->
-    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,162,39,0.2),transparent);"></div>
-      <div style="font-size:20pt;font-weight:800;color:rgba(201,162,39,0.75);letter-spacing:-1px;">${fat}<span style="font-size:9pt;font-weight:600;">g</span></div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.45);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Fat</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الدهون</div>
-    </div>
-    <!-- Water -->
-    <div style="background:linear-gradient(135deg,#0d2418,#0f2e1c);border:1px solid rgba(201,162,39,0.15);border-radius:16px;padding:16px 12px;text-align:center;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(15,61,46,0.8),transparent);"></div>
-      <div style="font-size:20pt;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:-1px;">${water}<span style="font-size:9pt;font-weight:600;">L</span></div>
-      <div style="font-size:7.5pt;font-weight:700;color:rgba(201,162,39,0.4);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Water</div>
-      <div style="font-size:7pt;color:rgba(255,255,255,0.2);font-family:'Cairo',sans-serif;margin-top:2px;">الماء</div>
-    </div>
-  </div>
-</div>` : ''}
 
 <!-- ══ MEDICAL ALERTS ══ -->
 ${(gn('medicalConditions') || gn('foodAllergies')) ? `
@@ -1377,3 +1370,5 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="render-area" style="position:fixed;left:-9999px;top:0;z-index:-1;"></div>
 </body>
 </html>
+
+
