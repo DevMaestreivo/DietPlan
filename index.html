@@ -1945,7 +1945,7 @@ async function createClientGlassPDF(data, PDF, fontBase64) {
   const pages = [];
   let canvas, ctx, y;
   const ink = '#1B3A2E', forest = '#3C6B58', sage = '#8BBD A0'.replace(' ', ''), coral = '#C9825C', blue = '#72B4CC', muted = '#71897D';
-  const font = size => { ctx.font = `${size}px DietPDFCairoGlass`; };
+  const font = size => { ctx.font = `700 ${size}px DietPDFCairoGlass`; };
   const box = (x, top, width, height, fill, stroke = 'rgba(60,107,88,0.12)', radius = 16) => {
     ctx.beginPath(); ctx.roundRect(x, top, width, height, radius); ctx.fillStyle = fill; ctx.fill();
     if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke(); }
@@ -2010,18 +2010,21 @@ async function createClientGlassPDF(data, PDF, fontBase64) {
       write(metric[0], x + 10, x + 122, y + 22, 8, metric[3], 'ltr'); write(metric[1], x + 10, x + 122, y + 55, 16, ink, 'ltr'); write(metric[2], x + 10, x + 122, y + 78, 9, muted, 'rtl');
     });
     y += 116;
-    box(42, y, 710, 74, 'rgba(255,249,241,0.9)', 'rgba(201,130,92,0.2)', 15);
-    write('TODAY\'S FOCUS', 62, 730, y + 24, 9, coral, 'ltr'); multiline(focus, 62, 730, y + 52, 660, 13, '#385949'); y += 98;
-    box(42, y, 710, 84, 'rgba(255,255,255,0.86)', 'rgba(60,107,88,0.12)', 15);
+    const focusHeight = Math.max(74, 52 + multiline(focus, 62, 730, y + 52, 660, 13, '#385949'));
+    box(42, y, 710, focusHeight, 'rgba(255,249,241,0.9)', 'rgba(201,130,92,0.2)', 15);
+    write('TODAY\'S FOCUS', 62, 730, y + 24, 9, coral, 'ltr'); multiline(focus, 62, 730, y + 52, 660, 13, '#385949'); y += focusHeight + 24;
+    const noteText = dietitianNote || 'خطتك مصممة لتناسب يومك. خذها خطوة بخطوة، وشارك ما تشعر به في المتابعة القادمة.';
+    const noteHeight = Math.max(84, 51 + multiline(noteText, 62, 730, y + 51, 650, 13, '#385949'));
+    box(42, y, 710, noteHeight, 'rgba(255,255,255,0.86)', 'rgba(60,107,88,0.12)', 15);
     write('A NOTE FROM YOUR DIETITIAN', 62, 730, y + 23, 9, forest, 'ltr');
-    multiline(dietitianNote || 'خطتك مصممة لتناسب يومك. خذها خطوة بخطوة، وشارك ما تشعر به في المتابعة القادمة.', 62, 730, y + 51, 650, 13, '#385949');
-    write((data.drName || 'Your dietitian') + (data.visitDate ? '  ·  ' + data.visitDate : ''), 62, 730, y + 75, 9, muted, 'rtl'); y += 108;
+    multiline(noteText, 62, 730, y + 51, 650, 13, '#385949');
+    write((data.drName || 'Your dietitian') + (data.visitDate ? '  ·  ' + data.visitDate : ''), 62, 730, y + noteHeight - 9, 9, muted, 'rtl'); y += noteHeight + 24;
     if (weight && target) {
       box(42, y, 710, 76, 'rgba(235,248,253,0.88)', 'rgba(114,180,204,0.2)', 15);
       write('WEIGHT JOURNEY', 62, 730, y + 23, 9, blue, 'ltr'); write(weight + ' kg', 62, 250, y + 54, 17, ink, 'ltr'); write(target + ' kg', 545, 730, y + 54, 17, forest, 'ltr');
       ctx.fillStyle = 'rgba(60,107,88,0.12)'; ctx.fillRect(275, y + 43, 250, 8); ctx.fillStyle = forest; ctx.fillRect(275, y + 43, 250 * weightPct / 100, 8); y += 100;
     }
-    if (data.medicalConditions || data.foodAllergies) { startSection('تنبيهات مهمة', 'IMPORTANT NOTES'); const alertText = [data.medicalConditions && 'الحالة الصحية: ' + data.medicalConditions, data.foodAllergies && 'الحساسية الغذائية: ' + data.foodAllergies].filter(Boolean).join('   ·   '); box(42, y, 710, 58, 'rgba(255,249,241,0.9)', 'rgba(201,130,92,0.18)', 14); multiline(alertText, 58, 736, y + 25, 660, 12, '#6D5547'); y += 78; }
+    if (data.medicalConditions || data.foodAllergies) { startSection('تنبيهات مهمة', 'IMPORTANT NOTES'); const alertText = [data.medicalConditions && 'الحالة الصحية: ' + data.medicalConditions, data.foodAllergies && 'الحساسية الغذائية: ' + data.foodAllergies].filter(Boolean).join('   ·   '); const alertHeight = Math.max(58, 25 + multiline(alertText, 58, 736, y + 25, 660, 12, '#6D5547')); box(42, y, 710, alertHeight, 'rgba(255,249,241,0.9)', 'rgba(201,130,92,0.18)', 14); multiline(alertText, 58, 736, y + 25, 660, 12, '#6D5547'); y += alertHeight + 20; }
     startSection('رحلة الوجبات اليومية', 'YOUR DAILY MEAL JOURNEY');
     meals.forEach((meal, index) => {
       const lines = wrapDietText(meal.food, 540, text => { font(13); return ctx.measureText(text).width; });
@@ -2032,7 +2035,7 @@ async function createClientGlassPDF(data, PDF, fontBase64) {
       write(meal.label, 568, 730, y + 29, 14, forest, 'rtl'); write(index < 2 ? 'NEXT' : 'PLANNED', 62, 200, y + 24, 8, muted, 'ltr');
       multiline(meal.food, 62, 550, y + 51, 470, 13, ink); y += height + 10;
     });
-    data.notes.filter(note => note.value).forEach(note => { const height = 66; if (y + height > 1000) { footer(pages.length - 1); newPage(false); } box(42, y, 710, height, 'rgba(255,255,255,0.84)', 'rgba(60,107,88,0.1)', 14); write(note.label, 568, 730, y + 25, 12, forest, 'rtl'); multiline(note.value, 62, 550, y + 48, 470, 11, muted); y += height + 9; });
+    data.notes.filter(note => note.value).forEach(note => { const textHeight = multiline(note.value, 62, 550, y + 48, 470, 11, muted); const height = Math.max(66, 48 + textHeight); if (y + height > 1000) { footer(pages.length - 1); newPage(false); } box(42, y, 710, height, 'rgba(255,255,255,0.84)', 'rgba(60,107,88,0.1)', 14); write(note.label, 568, 730, y + 25, 12, forest, 'rtl'); multiline(note.value, 62, 550, y + 48, 470, 11, muted); y += height + 9; });
     if (data.followUpDate) { if (y + 76 > 1000) { footer(pages.length - 1); newPage(false); } box(42, y, 710, 70, 'rgba(235,248,253,0.88)', 'rgba(114,180,204,0.2)', 14); write('موعد المتابعة · NEXT APPOINTMENT', 62, 730, y + 27, 11, blue, 'rtl'); write(data.followUpDate, 62, 730, y + 53, 16, ink, 'rtl'); y += 88; }
     pages.forEach((page, index) => { ctx = page.getContext('2d'); ctx.scale(2, 2); footer(index); if (index) pdf.addPage(); pdf.addImage(page.toDataURL('image/jpeg', 0.96), 'JPEG', 0, 0, 210, 297, undefined, 'FAST'); });
     return pdf;
